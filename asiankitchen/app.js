@@ -1,3 +1,5 @@
+'use strict';
+
 const menu = [
   {
     id: 1,
@@ -81,3 +83,82 @@ const menu = [
     desc: `Red bean paste dessert, serving with honey.`,
   },
 ];
+
+const countryList = menu.reduce(
+  (accumulator, meal) => {
+    if (!accumulator.includes(meal.category)) {
+      accumulator.push(meal.category);
+    }
+    return accumulator;
+  },
+  ["All"]
+);
+
+
+const section = document.getElementsByClassName("section-center")[0];
+const buttonContainer = document.getElementsByClassName("btn-container")[0];
+
+window.addEventListener("load", listMenu(menu));
+window.addEventListener("load", listCountryCategories());
+
+
+function listCountryCategories() {
+    countryList
+      .forEach((country) => {
+        const button = createButton(country);
+        button.addEventListener('click', e => addEvent(e));
+        buttonContainer.appendChild(button);
+    })
+};
+
+function createButton(country) {
+  const button = document.createElement("BUTTON");
+  button.classList.add("btn");
+  button.classList.add("btn-outline-dark");
+  button.classList.add("btn-item");
+  button.setAttribute('data-id', country);
+  button.innerHTML = country;
+  return button;
+}
+
+function filterMenu(category) {
+  return menu
+    .filter(meal => (meal.category === category));
+}
+
+function addEvent(e) {
+  const category = e.currentTarget.dataset.id;
+  if (category === "All") {
+    listMenu(menu);
+  } else {
+    let filteredMenu = filterMenu(category);
+    listMenu(filteredMenu);
+  }
+  
+
+}
+
+
+function listMenu(menuItems) {
+  let displayMenu = menuItems.map((item) => {
+    return `<div class="menu-items col-lg-6 col-sm-12">
+            <img
+              src=${item.img}
+              alt=${item.title}
+              class="photo"
+            />
+            <div class="menu-info">
+              <div class="menu-title">
+                <h4>${item.title}</h4>
+                <h4 class="price">${item.price}</h4>
+              </div>
+              <div class="menu-text">
+                ${item.desc}
+              </div>
+            </div>
+          </div>
+    `;
+  });
+  displayMenu = displayMenu.join("");
+  section.innerHTML = displayMenu;
+};
